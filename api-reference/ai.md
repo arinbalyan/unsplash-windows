@@ -229,7 +229,7 @@ If a model isn't available to the user (or has been disabled by the user), Rayca
 | model | The AI model to use to answer to the prompt. | <code>[AI.Model](ai.md#ai.model)</code> |
 | signal | Abort signal to cancel the request. | <code>[AbortSignal](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal)</code> |
 
-## Rate limit
+## Rate Limit
 
 Defines the rate limits that apply to Raycast AI usage within extensions. These values specify how many AI requests can be made per minute and per hour.
 

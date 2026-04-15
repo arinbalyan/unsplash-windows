@@ -356,21 +356,9 @@ Expectations are used to check if the AI response matches the expected behavior.
 
 ## AI File
 
-If your instructions or evals start getting too long and clutter your `package.json` file, you can move them to a separate file. It can be either a `ai.json`, `ai.yaml`, or `ai.json5` file in the root of your extension next to the `package.json` file.
-
-The structure of the AI file is the same as in the `package.json` file.
+Your instructions or evals can start to become rather long and clutter your `package.json` file, for this reason, we recommend you to use a `ai.yaml` file in the root of your extension next to the `package.json` file.
 
 {% tabs %}
-{% tab title="ai.json" %}
-
-```json
-{
-  "instructions": "When you don't know the user's first name, ask for it."
-}
-```
-
-{% endtab %}
-
 {% tab title="ai.yaml" %}
 
 ```yaml
@@ -379,21 +367,7 @@ instructions: |
 ```
 
 {% endtab %}
-
-{% tab title="ai.json5" %}
-
-```json5
-{
-  instructions: "When you don't know the user's first name, ask for it.",
-}
-```
-
-{% endtab %}
 {% endtabs %}
-
-{% hint style="info" %}
-The AI file is optional. If you don't provide it, Raycast will use the instructions and evals from the `package.json` file. We found that [`yaml`](https://yaml.org/) and [`json5`](https://json5.org/) can be more readable for long instructions.
-{% endhint %}
 
 
 # Write Evals For Your AI Extension
@@ -677,7 +651,7 @@ If a model isn't available to the user (or has been disabled by the user), Rayca
 | model | The AI model to use to answer to the prompt. | <code>AI.Model</code> |
 | signal | Abort signal to cancel the request. | <code>[AbortSignal](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal)</code> |
 
-## Rate limit
+## Rate Limit
 
 Defines the rate limits that apply to Raycast AI usage within extensions. These values specify how many AI requests can be made per minute and per hour.
 
@@ -11372,7 +11346,7 @@ All properties for a tool.
 
 ## AI Properties
 
-All properties for the AI capabilities of the extension. Alternatively, this object can be written in a `ai.json` (or `ai.yaml`) file at the root of the extension.
+All properties for the AI capabilities of the extension. This object should be written in a `ai.yaml` file at the root of the extension.
 
 | Property     | Description                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
