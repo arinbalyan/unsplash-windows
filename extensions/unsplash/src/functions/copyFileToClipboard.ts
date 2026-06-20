@@ -29,7 +29,7 @@ $img = [System.Drawing.Image]::FromFile('${fixedPathName.replace(/'/g, "''")}')
 [System.Windows.Forms.Clipboard]::SetImage($img)
 $img.Dispose()`;
       const encoded = Buffer.from(ps.trim(), "utf16le").toString("base64");
-      await execFileP("powershell", ["-NoProfile", "-EncodedCommand", encoded]);
+      await execFileP("powershell", ["-NoProfile", "-STA", "-EncodedCommand", encoded]);
       toast.style = Toast.Style.Success;
       toast.title = "Image copied to the clipboard!";
       return;

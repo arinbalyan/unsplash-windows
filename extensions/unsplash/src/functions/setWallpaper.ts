@@ -29,7 +29,8 @@ public class W {
 }
 "@
 Add-Type -TypeDefinition $c
-[W]::SystemParametersInfo(20,0,'${imagePath.replace(/'/g, "''")}',3)`;
+$r = [W]::SystemParametersInfo(20,0,'${imagePath.replace(/'/g, "''")}',3)
+if ($r -eq 0) { throw "SystemParametersInfo returned 0" }`;
   const encoded = Buffer.from(ps, "utf16le").toString("base64");
   await execFileP("powershell", ["-NoProfile", "-EncodedCommand", encoded]);
 }
@@ -57,6 +58,7 @@ export const setWallpaper = async ({ url, id, every, useHud = false, isBackgroun
 
   try {
     if (process.platform === "win32") {
+      // Windows: SPI sets wallpaper on all monitors; `every` is always true
       if (!existsSync(fixedPathName)) {
         await execFileP("curl.exe", ["-s", "-o", fixedPathName, url]);
       }

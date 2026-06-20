@@ -3,7 +3,6 @@ import { runAppleScript } from "@raycast/utils";
 import { execFile } from "child_process";
 import { promisify } from "util";
 import { join } from "path";
-import { homedir } from "os";
 
 const execFileP = promisify(execFile);
 
@@ -17,7 +16,12 @@ export const saveImage = async ({ url, id }: SaveImageProps) => {
 
   try {
     if (process.platform === "win32") {
-      const dest = join(homedir(), "Desktop", `${id}-${downloadSize}.jpg`);
+      const desktopResult = await execFileP("powershell", [
+        "-NoProfile",
+        "-Command",
+        "[Environment]::GetFolderPath('Desktop')",
+      ]);
+      const dest = join(desktopResult.stdout.trim(), `${id}-${downloadSize}.jpg`);
       await execFileP("curl.exe", ["-s", "-o", dest, url]);
       await showHUD(`Image saved to Desktop`);
       return;
