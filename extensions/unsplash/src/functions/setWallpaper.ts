@@ -29,7 +29,7 @@ public class W {
 }
 "@
 Add-Type -TypeDefinition $c
-[W]::SystemParametersInfo(20,0,'${imagePath.replace(/'/g, "''")}',2)`;
+[W]::SystemParametersInfo(20,0,'${imagePath.replace(/'/g, "''")}',3)`;
   const encoded = Buffer.from(ps, "utf16le").toString("base64");
   await execFileP("powershell", ["-NoProfile", "-EncodedCommand", encoded]);
 }
