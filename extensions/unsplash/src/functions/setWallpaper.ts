@@ -1,11 +1,11 @@
 import { showToast, Toast, environment, getPreferenceValues, showHUD } from "@raycast/api";
 import { runAppleScript } from "@raycast/utils";
-import { exec } from "child_process";
+import { execFile } from "child_process";
 import { promisify } from "util";
 import { existsSync } from "fs";
 import { resolveHome } from "./utils";
 
-const execP = promisify(exec);
+const execFileP = promisify(execFile);
 
 interface SetWallpaperProps {
   url: string;
@@ -31,7 +31,7 @@ public class W {
 Add-Type -TypeDefinition $c
 [W]::SystemParametersInfo(20,0,'${imagePath.replace(/'/g, "''")}',2)`;
   const encoded = Buffer.from(ps, "utf16le").toString("base64");
-  await execP(`powershell -NoProfile -EncodedCommand ${encoded}`);
+  await execFileP("powershell", ["-NoProfile", "-EncodedCommand", encoded]);
 }
 
 export const setWallpaper = async ({ url, id, every, useHud = false, isBackground = false }: SetWallpaperProps) => {
@@ -58,7 +58,7 @@ export const setWallpaper = async ({ url, id, every, useHud = false, isBackgroun
   try {
     if (process.platform === "win32") {
       if (!existsSync(fixedPathName)) {
-        await execP(`curl.exe -s -o "${fixedPathName}" "${url}"`);
+        await execFileP("curl.exe", ["-s", "-o", fixedPathName, url]);
       }
       await setWallpaperWindows(fixedPathName);
       if (useHud) {

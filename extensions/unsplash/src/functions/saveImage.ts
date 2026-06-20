@@ -1,11 +1,11 @@
 import { getPreferenceValues, showHUD } from "@raycast/api";
 import { runAppleScript } from "@raycast/utils";
-import { exec } from "child_process";
+import { execFile } from "child_process";
 import { promisify } from "util";
 import { join } from "path";
 import { homedir } from "os";
 
-const execP = promisify(exec);
+const execFileP = promisify(execFile);
 
 interface SaveImageProps {
   url: string;
@@ -18,7 +18,8 @@ export const saveImage = async ({ url, id }: SaveImageProps) => {
   try {
     if (process.platform === "win32") {
       const dest = join(homedir(), "Desktop", `${id}-${downloadSize}.jpg`);
-      await execP(`curl.exe -s -o "${dest}" "${url}"`);
+      await execFileP("curl.exe", ["-s", "-o", dest, url]);
+      await showHUD(`Image saved to Desktop`);
       return;
     }
 

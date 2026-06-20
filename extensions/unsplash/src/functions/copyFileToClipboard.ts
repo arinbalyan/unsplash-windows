@@ -1,10 +1,10 @@
 import { showToast, Toast, environment } from "@raycast/api";
 import { runAppleScript } from "@raycast/utils";
-import { exec } from "child_process";
+import { execFile } from "child_process";
 import { promisify } from "util";
 import { existsSync } from "fs";
 
-const execP = promisify(exec);
+const execFileP = promisify(execFile);
 
 interface CopyFileToClipboardProps {
   url: string;
@@ -20,15 +20,16 @@ export const copyFileToClipboard = async ({ url, id }: CopyFileToClipboardProps)
   try {
     if (process.platform === "win32") {
       if (!existsSync(fixedPathName)) {
-        await execP(`curl.exe -s -o "${fixedPathName}" "${url}"`);
+        await execFileP("curl.exe", ["-s", "-o", fixedPathName, url]);
       }
       const ps = `
+Add-Type -AssemblyName System.Drawing
 Add-Type -AssemblyName System.Windows.Forms
 $img = [System.Drawing.Image]::FromFile('${fixedPathName.replace(/'/g, "''")}')
 [System.Windows.Forms.Clipboard]::SetImage($img)
 $img.Dispose()`;
       const encoded = Buffer.from(ps.trim(), "utf16le").toString("base64");
-      await execP(`powershell -NoProfile -EncodedCommand ${encoded}`);
+      await execFileP("powershell", ["-NoProfile", "-EncodedCommand", encoded]);
       toast.style = Toast.Style.Success;
       toast.title = "Image copied to the clipboard!";
       return;
