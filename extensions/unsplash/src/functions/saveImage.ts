@@ -16,13 +16,14 @@ export const saveImage = async ({ url, id }: SaveImageProps) => {
 
   try {
     if (process.platform === "win32") {
+      await showHUD("Downloading image...");
       const desktopResult = await execFileP("powershell", [
         "-NoProfile",
         "-Command",
         "[Environment]::GetFolderPath('Desktop')",
       ]);
       const dest = join(desktopResult.stdout.trim(), `${id}-${downloadSize}.jpg`);
-      await execFileP("curl.exe", ["-s", "-o", dest, url]);
+      await execFileP("curl.exe", ["-s", "--fail", "-o", dest, url]);
       await showHUD(`Image saved to Desktop`);
       return;
     }
