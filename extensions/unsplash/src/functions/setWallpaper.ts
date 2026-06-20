@@ -1,7 +1,11 @@
 import { showToast, Toast, environment, getPreferenceValues, showHUD } from "@raycast/api";
 import { runAppleScript } from "@raycast/utils";
+import { exec } from "child_process";
+import { promisify } from "util";
 import { existsSync } from "fs";
 import { resolveHome } from "./utils";
+
+const execP = promisify(exec);
 
 interface SetWallpaperProps {
   url: string;
@@ -15,6 +19,20 @@ const displayMessage = async (msg: string, type: "hud" | "toast") => {
   if (type === "hud") await showHUD(msg);
   else return await showToast(Toast.Style.Animated, msg);
 };
+
+async function setWallpaperWindows(imagePath: string) {
+  const ps = `$c=@"
+using System.Runtime.InteropServices;
+public class W {
+  [DllImport("user32.dll",CharSet=CharSet.Auto)]
+  public static extern int SystemParametersInfo(int a,int b,string c,int d);
+}
+"@
+Add-Type -TypeDefinition $c
+[W]::SystemParametersInfo(20,0,'${imagePath.replace(/'/g, "''")}',2)`;
+  const encoded = Buffer.from(ps, "utf16le").toString("base64");
+  await execP(`powershell -NoProfile -EncodedCommand ${encoded}`);
+}
 
 export const setWallpaper = async ({ url, id, every, useHud = false, isBackground = false }: SetWallpaperProps) => {
   const { downloadSize, wallpaperPath } = getPreferenceValues<Preferences>();
@@ -38,6 +56,20 @@ export const setWallpaper = async ({ url, id, every, useHud = false, isBackgroun
     : `${selectedPath}/${id}-${downloadSize}.jpg`;
 
   try {
+    if (process.platform === "win32") {
+      if (!existsSync(fixedPathName)) {
+        await execP(`curl.exe -s -o "${fixedPathName}" "${url}"`);
+      }
+      await setWallpaperWindows(fixedPathName);
+      if (useHud) {
+        if (!isBackground) await showHUD("Wallpaper set!");
+      } else if (toast) {
+        toast.style = Toast.Style.Success;
+        toast.title = "Wallpaper set!";
+      }
+      return true;
+    }
+
     const actualPath = fixedPathName;
 
     const command = !existsSync(actualPath)
