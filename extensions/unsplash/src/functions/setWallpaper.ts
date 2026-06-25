@@ -60,7 +60,7 @@ export const setWallpaper = async ({ url, id, every, useHud = false, isBackgroun
     if (process.platform === "win32") {
       // Windows: SPI sets wallpaper on all monitors; `every` is always true
       if (!existsSync(fixedPathName)) {
-        await execFileP("curl.exe", ["-s", "-o", fixedPathName, url]);
+        await execFileP("curl.exe", ["-s", "--fail", "-o", fixedPathName, url]);
       }
       await setWallpaperWindows(fixedPathName);
       if (useHud) {

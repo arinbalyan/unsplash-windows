@@ -20,7 +20,7 @@ export const copyFileToClipboard = async ({ url, id }: CopyFileToClipboardProps)
   try {
     if (process.platform === "win32") {
       if (!existsSync(fixedPathName)) {
-        await execFileP("curl.exe", ["-s", "-o", fixedPathName, url]);
+        await execFileP("curl.exe", ["-s", "--fail", "-o", fixedPathName, url]);
       }
       const ps = `
 Add-Type -AssemblyName System.Drawing
