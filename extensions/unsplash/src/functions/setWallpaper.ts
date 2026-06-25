@@ -2,7 +2,7 @@ import { showToast, Toast, environment, getPreferenceValues, showHUD } from "@ra
 import { runAppleScript } from "@raycast/utils";
 import { execFile } from "child_process";
 import { promisify } from "util";
-import { existsSync } from "fs";
+import { existsSync, unlinkSync } from "fs";
 import { resolveHome } from "./utils";
 
 const execFileP = promisify(execFile);
@@ -60,7 +60,16 @@ export const setWallpaper = async ({ url, id, every, useHud = false, isBackgroun
     if (process.platform === "win32") {
       // Windows: SPI sets wallpaper on all monitors; `every` is always true
       if (!existsSync(fixedPathName)) {
-        await execFileP("curl.exe", ["-s", "--fail", "-o", fixedPathName, url]);
+        try {
+          await execFileP("curl.exe", ["-s", "--fail", "-o", fixedPathName, url]);
+        } catch (err) {
+          try {
+            unlinkSync(fixedPathName);
+          } catch {
+            // ignore cleanup error
+          }
+          throw err;
+        }
       }
       await setWallpaperWindows(fixedPathName);
       if (useHud) {

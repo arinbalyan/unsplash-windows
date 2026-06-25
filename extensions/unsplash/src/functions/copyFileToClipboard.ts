@@ -2,7 +2,7 @@ import { showToast, Toast, environment } from "@raycast/api";
 import { runAppleScript } from "@raycast/utils";
 import { execFile } from "child_process";
 import { promisify } from "util";
-import { existsSync } from "fs";
+import { existsSync, unlinkSync } from "fs";
 
 const execFileP = promisify(execFile);
 
@@ -20,7 +20,16 @@ export const copyFileToClipboard = async ({ url, id }: CopyFileToClipboardProps)
   try {
     if (process.platform === "win32") {
       if (!existsSync(fixedPathName)) {
-        await execFileP("curl.exe", ["-s", "--fail", "-o", fixedPathName, url]);
+        try {
+          await execFileP("curl.exe", ["-s", "--fail", "-o", fixedPathName, url]);
+        } catch (err) {
+          try {
+            unlinkSync(fixedPathName);
+          } catch {
+            // ignore cleanup error
+          }
+          throw err;
+        }
       }
       const ps = `
 Add-Type -AssemblyName System.Drawing
