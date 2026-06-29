@@ -1,6 +1,6 @@
 # Unsplash Changelog
 
-## [Windows Support] - {PR_MERGE_DATE}
+## [Windows Support] - 2026-06-29
 
 - Added Windows support for setting wallpaper, copying images to clipboard, and saving images
 - Wallpaper: uses PowerShell + Win32 SystemParametersInfo on Windows
